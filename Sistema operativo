@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Sistema Operativo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: url('https://source.unsplash.com/1920x1080/?abstract,tech') no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+        }
+
+        .desktop {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            padding: 20px;
+            position: relative;
+        }
+
+        .icon {
+            width: 80px;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            margin: 15px;
+        }
+
+        .icon img {
+            width: 60px;
+            height: 60px;
+        }
+
+        .window {
+            width: 400px;
+            height: 300px;
+            background: white;
+            border: 2px solid #0078D7;
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            display: none;
+            box-shadow: 5px 5px 10px rgba(0,0,0,0.5);
+            resize: both;
+            overflow: auto;
+        }
+
+        .window-header {
+            background: #0078D7;
+            color: white;
+            padding: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+
+        .window-content {
+            padding: 10px;
+            height: calc(100% - 30px);
+        }
+
+        .close-btn, .minimize-btn, .maximize-btn {
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+
+        .calc-buttons button {
+            padding: 10px;
+            font-size: 18px;
+        }
+
+        .clock {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            color: white;
+        }
+
+        .taskbar-item {
+            margin: 0 10px;
+            cursor: pointer;
+        }
+
+        .paint-canvas {
+            border: 1px solid #000;
+            background: white;
+            width: 100%;
+            height: 90%;
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock" id="clock">00:00:00</div>
+
+    <div class="desktop">
+        <div class="icon" onclick="openWindow('app1')" role="button" aria-label="Abrir Bloc de notas">
+            <img src="https://cdn-icons-png.flaticon.com/512/888/888859.png" alt="App 1">
+            <p>Bloc de notas</p>
+        </div>
+        <div class="icon" onclick="openWindow('app2')" role="button" aria-label="Abrir Navegador">
+            <img src="https://cdn-icons-png.flaticon.com/512/1827/1827544.png" alt="App 2">
+            <p>Navegador</p>
+        </div>
+        <div class="icon" onclick="openWindow('app3')" role="button" aria-label="Abrir Calculadora">
+            <img src="https://cdn-icons-png.flaticon.com/512/2721/2721273.png" alt="App 3">
+            <p>Calculadora</p>
+        </div>
+        <div class="icon" onclick="openWindow('app4')" role="button" aria-label="Abrir WordPad">
+            <img src="https://cdn-icons-png.flaticon.com/512/2306/2306031.png" alt="App 4">
+            <p>WordPad</p>
+        </div>
+        <div class="icon" onclick="openWindow('app5')" role="button" aria-label="Abrir Paint">
+            <img src="https://cdn-icons-png.flaticon.com/512/2800/2800785.png" alt="App 5">
+            <p>Paint</p>
+        </div>
+    </div>
+
+    <div id="app1" class="window">
+        <div class="window-header">
+            Bloc de notas
+            <div>
+                <span class="minimize-btn" onclick="minimizeWindow('app1')">─</span>
+                <span class="maximize-btn" onclick="maximizeWindow('app1')">□</span>
+                <span class="close-btn" onclick="closeWindow('app1')">✖</span>
+            </div>
+        </div>
+        <div class="window-content">
+            <textarea style="width: 100%; height: 100%;"></textarea>
+        </div>
+    </div>
+
+    <div id="app2" class="window">
+        <div class="window-header">
+            Navegador
+            <div>
+                <span class="minimize-btn" onclick="minimizeWindow('app2')">─</span>
+                <span class="maximize-btn" onclick="maximizeWindow('app2')">□</span>
+                <span class="close-btn" onclick="closeWindow('app2')">✖</span>
+            </div>
+        </div>
+        <div class="window-content">
+            <p>Bienvenido a un navegador falso 😆.</p>
+        </div>
+    </div>
+
+    <div id="app3" class="window">
+        <div class="window-header">
+            Calculadora
+            <div>
+                <span class="minimize-btn" onclick="minimizeWindow('app3')">─</span>
+                <span class="maximize-btn" onclick="maximizeWindow('app3')">□</span>
+                <span class="close-btn" onclick="closeWindow('app3')">✖</span>
+            </div>
+        </div>
+        <div class="window-content">
+            <input type="text" id="calc-display" style="width: 100%; font-size: 20px; text-align: right;" disabled>
+            <div class="calc-buttons">
+                <button onclick="addToCalc('7')">7</button>
+                <button onclick="addToCalc('8')">8</button>
+                <button onclick="addToCalc('9')">9</button>
+                <button onclick="addToCalc('/')">÷</button>
+                <button onclick="addToCalc('4')">4</button>
+                <button onclick="addToCalc('5')">5</button>
+                <button onclick="addToCalc('6')">6</button>
+                <button onclick="addToCalc('*')">×</button>
+                <button onclick="addToCalc('1')">1</button>
+                <button onclick="addToCalc('2')">2</button>
+                <button onclick="addToCalc('3')">3</button>
+                <button onclick="addToCalc('-')">−</button>
+                <button onclick="addToCalc('0')">0</button>
+                <button onclick="addToCalc('.')">.</button>
+                <button onclick="calculate()">=</button>
+                <button onclick="addToCalc('+')">+</button>
+                <button onclick="clearCalc()">C</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app4" class="window">
+        <div class="window-header">
+            WordPad
+            <div>
+                <span class="minimize-btn" onclick="minimizeWindow('app4')">─</span>
+                <span class="maximize-btn" onclick="maximizeWindow('app4')">□</span>
+                <span class="close-btn" onclick="closeWindow('app4')">✖</span>
+            </div>
+        </div>
+        <div class="window-content">
+            <textarea style="width: 100%; height: 100%; font-size: 16px;"></textarea>
+        </div>
+    </div>
+
+    <div id="app5" class="window">
+        <div class="window-header">
+            Paint
+            <div>
+                <span class="minimize-btn" onclick="minimizeWindow('app5')">─</span>
+                <span class="maximize-btn" onclick="maximizeWindow('app5')">□</span>
+                <span class="close-btn" onclick="closeWindow('app5')">✖</span>
+            </div>
+        </div>
+        <div class="window-content">
+            <canvas id="paint-canvas" class="paint-canvas"></canvas>
+        </div>
+    </div>
+
+    <div class="taskbar">
+        <div class="taskbar-item" onclick="openWindow('app1')">Bloc de notas</div>
+        <div class="taskbar-item" onclick="openWindow('app2')">Navegador</div>
+        <div class="taskbar-item" onclick="openWindow('app3')">Calculadora</div>
+        <div class="taskbar-item" onclick="openWindow('app4')">WordPad</div>
+        <div class="taskbar-item" onclick="openWindow('app5')">Paint</div>
+    </div>
+
+    <script>
+        function openWindow(appId) {
+            document.getElementById(appId).style.display = "block";
+        }
+
+        function closeWindow(appId) {
+            document.getElementById(appId).style.display = "none";
+        }
+
+        function minimizeWindow(appId) {
+            document.getElementById(appId).style.display = "none";
+        }
+
+        function maximizeWindow(appId) {
+            const window = document.getElementById(appId);
+            if (window.style.width === "100vw" && window.style.height === "100vh") {
+                window.style.width = "400px";
+                window.style.height = "300px";
+            } else {
+                window.style.width = "100vw";
+                window.style.height = "100vh";
+                window.style.top = "0";
+                window.style.left = "0";
+            }
+        }
+
+        function addToCalc(value) {
+            document.getElementById("calc-display").value += value;
+        }
+
+        function calculate() {
+            let input = document.getElementById("calc-display").value;
+            try {
+                document.getElementById("calc-display").value = eval(input);
+            } catch {
+                alert("Error en la operación.");
+            }
+        }
+
+        function clearCalc() {
+            document.getElementById("calc-display").value = "";
+        }
+
+        function updateClock() {
+            let now = new Date();
+            let hours = now.getHours().toString().padStart(2, '0');
+            let minutes = now.getMinutes().toString().padStart(2, '0');
+            let seconds = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById("clock").innerText = `${hours}:${minutes}:${seconds}`;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Función para arrastrar ventanas
+        let activeWindow = null;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        document.querySelectorAll('.window-header').forEach(header => {
+            header.addEventListener('mousedown', (e) => {
+                activeWindow = header.parentElement;
+                offsetX = e.clientX - activeWindow.offsetLeft;
+                offsetY = e.clientY - activeWindow.offsetTop;
+            });
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (activeWindow) {
+                activeWindow.style.left = `${e.clientX - offsetX}px`;
+                activeWindow.style.top = `${e.clientY - offsetY}px`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            activeWindow = null;
+        });
+
+        // Paint functionality
+        const canvas = document.getElementById('paint-canvas');
+        const ctx = canvas.getContext('2d');
+        let painting = false;
+
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        function startPosition(e) {
+            painting = true;
+            draw(e);
+        }
+
+        function endPosition() {
+            painting = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!painting) return;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = 'black';
+
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        }
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+    </script>
+</body>
+</html>
